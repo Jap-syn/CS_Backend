@@ -1,0 +1,22 @@
+There are 10 steps that need to write a module.
+
+1. Create a route file in src/interfaces/routes folder.
+
+2. Add route in server.ts.
+
+3. Create a controller file in src/interfaces/http/controllers folder.
+
+4. Create a module db schema in src/database/models folder.
+
+5. Create a db repository file in src/database folder.
+
+6. Create a exception file in src/domain/exceptions folder. ( That is optional )
+
+7. Create a model file in src/domain/models folder.
+
+8. Create a repository file in src/domain/repositories folder.
+
+9. Create every use cases in src/application/usecases folder.
+
+10. Create test files according to your usecases in tests/application folder.
+
