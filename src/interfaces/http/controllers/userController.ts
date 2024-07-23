@@ -1,15 +1,50 @@
 import { Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 import CreateUser from '../../../application/usecases/user/createUser';
 import GetUsers from '../../../application/usecases/user/getUsers';
 import GetUser from '../../../application/usecases/user/getUser';
 import UpdateUser from '../../../application/usecases/user/updateUser';
 import DeleteUser from '../../../application/usecases/user/deleteUser';
+import LoginUser from '../../../application/usecases/user/loginUser';
 import MongooseUserRepository from '../../../infrastructure/database/mongooseUserRepository';
 import logger from '../../../infrastructure/config/logger';
 import UserNotFoundException from '../../../domain/exceptions/userNotFoundException';
 import { successResponse, errorResponse } from '../../../application/helpers/utils/response';
 
 const userRepository = new MongooseUserRepository();
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key'; // Fallback to a default key (not recommended for production)
+
+export const loginUser = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+  const loginUser = new LoginUser(userRepository);
+
+  try {
+    const user = await loginUser.execute(email, password);
+    if (!user) {
+      res.status(401).json(errorResponse('Invalid email or password', 401));
+      return;
+    }
+
+    const token = jwt.sign(
+      { email: user.email, id: user.id }, 
+      JWT_SECRET, 
+      { expiresIn: '1h' }
+    );
+
+    logger.info('User logged in successfully: %s', user.email);
+    res.status(200).json({
+      success: true,
+      message: 'User logged in successfully',
+      data: {
+        user,
+        token
+      }
+    });
+  } catch (error) {
+    logger.error('Error logging in user: %s', (error as Error).message);
+    res.status(500).json(errorResponse((error as Error).message));
+  }
+};
 
 export const createUser = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
