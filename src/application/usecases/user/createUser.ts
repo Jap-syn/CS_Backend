@@ -14,14 +14,11 @@ export default class CreateUser {
     phone: string, 
     dob: Date, 
     gender: string, 
-    status: string, 
+    status: number, 
     remark: string
   ): Promise<User> {
     const hashedPassword = await passwordHasher.hashPassword(password);
     const userId = new ObjectId();// Ensure this matches the type expected by your User class
-    
-
-    
     const user = new User(
       userId, 
       first_name, 
@@ -39,8 +36,3 @@ export default class CreateUser {
     return user;
   }
 }
-
-
-
-
-    // 

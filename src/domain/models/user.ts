@@ -10,7 +10,7 @@ export default class User {
     public phone: string,
     public dob: Date,
     public gender: string,
-    public status: string,
+    public status: number,
     public remark: string
   ) {}
 }

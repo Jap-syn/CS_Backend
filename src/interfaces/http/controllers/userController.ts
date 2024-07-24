@@ -47,11 +47,11 @@ export const loginUser = async (req: Request, res: Response) => {
 };
 
 export const createUser = async (req: Request, res: Response) => {
-  const { name, email, password, phone, dob, gender } = req.body;
+  const { first_name,last_name, email, password, phone, dob, gender,status,remark } = req.body;
   const createUser = new CreateUser(userRepository);
   
   try {
-    const user = await createUser.execute(name, email, password, phone, new Date(dob), gender);
+    const user = await createUser.execute(first_name,last_name, email, password, phone, new Date(dob), gender,status,remark);
     logger.info('User created successfully: %s', user.email);
     res.status(201).json(successResponse(user, 'User created successfully', 201));
   } catch (error) {

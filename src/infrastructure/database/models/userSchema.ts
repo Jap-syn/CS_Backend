@@ -8,7 +8,7 @@ interface IUser extends Document {
     phone: string,
     dob: Date,
     gender: string,
-    status: string,
+    status: number,
     remark: string,
 }
 
@@ -20,8 +20,8 @@ const userSchema = new Schema<IUser>({
   phone: { type: String, required: true },
   dob: { type: Date, required: true },
   gender: { type: String, required: true },
-  status: { type: String, required: true },
-  remark: { type: String, required: true }
+  status: { type: Number, required: false },
+  remark: { type: String, required: false }
 });
 
 export const UserSchema = model<IUser>('User', userSchema);
