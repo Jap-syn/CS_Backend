@@ -12,7 +12,7 @@ import UserNotFoundException from '../../../domain/exceptions/userNotFoundExcept
 import { successResponse, errorResponse } from '../../../application/helpers/utils/response';
 
 const userRepository = new MongooseUserRepository();
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key'; // Fallback to a default key (not recommended for production)
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
 
 export const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -47,10 +47,11 @@ export const loginUser = async (req: Request, res: Response) => {
 };
 
 export const createUser = async (req: Request, res: Response) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, phone, dob, gender } = req.body;
   const createUser = new CreateUser(userRepository);
+  
   try {
-    const user = await createUser.execute(name, email, password);
+    const user = await createUser.execute(name, email, password, phone, new Date(dob), gender);
     logger.info('User created successfully: %s', user.email);
     res.status(201).json(successResponse(user, 'User created successfully', 201));
   } catch (error) {
@@ -88,10 +89,10 @@ export const getUser = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { name, email, password } = req.body;
+  const { first_name,last_name, email, password } = req.body;
   const updateUser = new UpdateUser(userRepository);
   try {
-    const user = await updateUser.execute(id, name, email, password);
+    const user = await updateUser.execute(id, first_name,last_name, email, password);
     logger.info('User updated successfully: %s', user.email);
     res.status(200).json(successResponse(user, 'User updated successfully'));
   } catch (error) {
@@ -119,4 +120,22 @@ export const deleteUser = async (req: Request, res: Response) => {
     logger.error('Error deleting user: %s', (error as Error).message);
     res.status(500).json(errorResponse((error as Error).message));
   }
+};
+
+export const logoutUser = async (req: Request, res: Response) => {
+  // Log the logout event
+  const token = req.headers.authorization?.split(' ')[1];
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET);
+      logger.info('User logged out successfully');
+    } catch (error) {
+      logger.error('Error verifying token during logout: %s', (error as Error).message);
+      return res.status(401).json(errorResponse('Invalid token', 401));
+    }
+  } else {
+    return res.status(400).json(errorResponse('Token not provided', 400));
+  }
+
+  res.status(200).json(successResponse(null, 'User logged out successfully'));
 };
