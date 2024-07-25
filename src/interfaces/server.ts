@@ -21,7 +21,7 @@ app.use(bodyParser.json());
 
 // Routes
 app.use('/users', userRoutes);
-app.use('/login', authRoutes);
+app.use('/', authRoutes);
 
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {

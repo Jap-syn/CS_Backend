@@ -11,6 +11,7 @@ export default class User {
     public dob: Date,
     public gender: string,
     public status: number,
-    public remark: string
+    public remark: string,
+    public token?: string 
   ) {}
 }

@@ -10,6 +10,7 @@ interface IUser extends Document {
     gender: string,
     status: number,
     remark: string,
+    token?:string
 }
 
 const userSchema = new Schema<IUser>({
@@ -21,7 +22,8 @@ const userSchema = new Schema<IUser>({
   dob: { type: Date, required: true },
   gender: { type: String, required: true },
   status: { type: Number, required: false },
-  remark: { type: String, required: false }
+  remark: { type: String, required: false },
+  token: { type: String, required: false }
 });
 
 export const UserSchema = model<IUser>('User', userSchema);
