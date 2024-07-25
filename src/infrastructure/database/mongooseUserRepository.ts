@@ -57,26 +57,20 @@ export default class MongooseUserRepository implements UserRepository {
   }
 
   async findByToken(token: string): Promise<User | null> {
-    try {
-      const userDocument = await UserSchema.findByToken(token);
-      if (!userDocument) return null;
-
-      return new User(
-        userDocument.id,
-        userDocument.first_name,
-        userDocument.last_name,
-        userDocument.email,
-        userDocument.password,
-        userDocument.phone,
-        userDocument.dob,
-        userDocument.gender,
-        userDocument.status,
-        userDocument.remark
-      );
-    } catch (error) {
-      console.error("Error finding user by token:", error);
-      return null;
-    }
+    const user = await UserSchema.findByToken(token);
+    if (!user) return null;
+    return new User(
+      user.id,
+      user.first_name,
+      user.last_name,
+      user.email,
+      user.password,
+      user.phone,
+      user.dob,
+      user.gender,
+      user.status,
+      user.remark
+    );
   }
 
   async save(user: User): Promise<void> {
