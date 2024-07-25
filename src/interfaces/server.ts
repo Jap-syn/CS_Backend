@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import { connectDatabase } from '../infrastructure/database/database';
 import logger from '../infrastructure/config/logger';
 import userRoutes from './http/routes/userRoutes';
-// import roleRoutes from './http/routes/roleRoutes';
+import roleRoutes from './http/routes/roleRoutes';
 import {config} from '../infrastructure/config/index';
 import { errorResponse } from '../application/helpers/utils/response';
 
@@ -21,7 +21,7 @@ app.use(bodyParser.json());
 
 // Routes
 app.use('/users', userRoutes);
-// app.use('/roles', roleRoutes);
+app.use('/roles', roleRoutes);
 
 
 // Error handling middleware
