@@ -56,23 +56,6 @@ export default class MongooseUserRepository implements UserRepository {
     );
   }
 
-  async findByToken(token: string): Promise<User | null> {
-    const user = await UserSchema.findByToken(token);
-    if (!user) return null;
-    return new User(
-      user.id,
-      user.first_name,
-      user.last_name,
-      user.email,
-      user.password,
-      user.phone,
-      user.dob,
-      user.gender,
-      user.status,
-      user.remark
-    );
-  }
-
   async save(user: User): Promise<void> {
     const newUser = new UserSchema(user);
     await newUser.save();
@@ -84,5 +67,9 @@ export default class MongooseUserRepository implements UserRepository {
 
   async delete(id: string): Promise<void> {
     await UserSchema.findByIdAndDelete(id);
+  }
+
+  async updateUserToken(userId: string, token: string | null): Promise<void> {
+    await UserSchema.findByIdAndUpdate(userId, { token });
   }
 }
