@@ -13,6 +13,11 @@ import {
   successResponse,
   errorResponse,
 } from "../../../application/helpers/utils/response";
+import LogoutUser from "../../../application/usecases/user/logoutUser";
+
+interface DecodedToken {
+  id: string;
+}
 
 const userRepository = new MongooseUserRepository();
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret_key";
@@ -27,7 +32,7 @@ export const loginUser = async (req: Request, res: Response) => {
     }
     const { user, token } = result;
     logger.info("User logged in successfully");
-    return res.status(200).json({ user, token });
+    return res.status(200).json({ user });
   } catch (error) {
     logger.error("Error logging in user: %s", (error as Error).message);
     res.status(500).json(errorResponse((error as Error).message));
@@ -82,38 +87,63 @@ export const getUsers = async (req: Request, res: Response) => {
 };
 
 export const getUser = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const getUser = new GetUser(userRepository);
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) {
+    logger.warn("Token not provided");
+    return res.status(400).json(errorResponse("Token not provided", 400));
+  }
   try {
-    const user = await getUser.execute(id);
-    res.status(200).json(successResponse(user, "User fetched successfully"));
+    const decoded = jwt.verify(token, JWT_SECRET) as DecodedToken;
+    const userId = decoded.id;
+    const getUser = new GetUser(userRepository);
+    const user = await getUser.execute(userId, token);
+    res
+      .status(200)
+      .json(successResponse(user, "User Profile was fetched successfully"));
   } catch (error) {
+    if (error instanceof jwt.JsonWebTokenError) {
+      logger.warn("Invalid token");
+      return res.status(401).json(errorResponse("Invalid token", 401));
+    }
     if (error instanceof UserNotFoundException) {
-      logger.warn("User not found: %s", id);
+      logger.warn("User not found");
       return res.status(404).json(errorResponse(error.message, 404));
     }
+
     logger.error("Error fetching user: %s", (error as Error).message);
     res.status(500).json(errorResponse((error as Error).message));
   }
 };
 
 export const updateUser = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { first_name, last_name, email, password } = req.body;
+  const token = req.headers.authorization?.split(" ")[1];
+  if (!token) {
+    logger.warn("Token not provided");
+    return res.status(400).json(errorResponse("Token not provided", 400));
+  }
+  const { first_name, last_name, email, phone, dob, gender, status, remark } =
+    req.body;
   const updateUser = new UpdateUser(userRepository);
   try {
+    const decoded = jwt.verify(token, JWT_SECRET) as DecodedToken;
+    const userId = decoded.id;
     const user = await updateUser.execute(
-      id,
+      userId,
       first_name,
       last_name,
       email,
-      password
+      phone,
+      dob,
+      gender,
+      status,
+      remark,
+      token
     );
     logger.info("User updated successfully: %s", user.email);
     res.status(200).json(successResponse(user, "User updated successfully"));
   } catch (error) {
     if (error instanceof UserNotFoundException) {
-      logger.warn("User not found: %s", id);
+      logger.warn("User not found");
       return res.status(404).json(errorResponse(error.message, 404));
     }
     logger.error("Error updating user: %s", (error as Error).message);
@@ -143,20 +173,19 @@ export const deleteUser = async (req: Request, res: Response) => {
 export const logoutUser = async (req: Request, res: Response) => {
   // Log the logout event
   const token = req.headers.authorization?.split(" ")[1];
-  if (token) {
-    try {
-      const decoded = jwt.verify(token, JWT_SECRET);
-      logger.info("User logged out successfully: %s", decoded);
-    } catch (error) {
-      logger.error(
-        "Error verifying token during logout: %s",
-        (error as Error).message
-      );
-      return res.status(401).json(errorResponse("Invalid token", 401));
-    }
-  } else {
+  if (!token) {
+    logger.warn("Token not provided");
     return res.status(400).json(errorResponse("Token not provided", 400));
   }
-
-  res.status(200).json(successResponse(null, "User logged out successfully"));
+  try {
+    const logoutUser = new LogoutUser(userRepository);
+    await logoutUser.execute(token);
+    res.status(200).json({ message: "User logged out successfully" });
+  } catch (error) {
+    logger.error(
+      "Error verifying token during logout: %s",
+      (error as Error).message
+    );
+    return res.status(401).json(errorResponse("Invalid token", 401));
+  }
 };
