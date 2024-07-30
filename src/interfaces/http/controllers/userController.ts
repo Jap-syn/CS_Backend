@@ -50,6 +50,7 @@ export const createUser = async (req: Request, res: Response) => {
     gender,
     status,
     remark,
+    token,
   } = req.body;
   const createUser = new CreateUser(userRepository);
 
@@ -63,7 +64,8 @@ export const createUser = async (req: Request, res: Response) => {
       new Date(dob),
       gender,
       status,
-      remark
+      remark,
+      token
     );
     logger.info("User created successfully: %s", user.email);
     res
@@ -95,6 +97,7 @@ export const getUser = async (req: Request, res: Response) => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as DecodedToken;
     const userId = decoded.id;
+
     const getUser = new GetUser(userRepository);
     const user = await getUser.execute(userId, token);
     res

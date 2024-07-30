@@ -17,7 +17,8 @@ export default class MongooseUserRepository implements UserRepository {
           user.dob,
           user.gender,
           user.status,
-          user.remark
+          user.remark,
+          user.token
         )
     );
   }
@@ -35,7 +36,8 @@ export default class MongooseUserRepository implements UserRepository {
       user.dob,
       user.gender,
       user.status,
-      user.remark
+      user.remark,
+      user.token
     );
   }
 
@@ -52,7 +54,8 @@ export default class MongooseUserRepository implements UserRepository {
       user.dob,
       user.gender,
       user.status,
-      user.remark
+      user.remark,
+      user.token
     );
   }
 

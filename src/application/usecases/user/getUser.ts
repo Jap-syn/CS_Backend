@@ -7,11 +7,13 @@ export default class GetUser {
 
   async execute(id: string, token: string): Promise<User> {
     const user = await this.userRepository.findById(id);
+
     if (!user) {
       throw new UserNotFoundException(id);
     }
-    if (user.token !== token) {
-      throw new Error("Invalid token");
+    if (user.token != token) {
+      console.log(`token : ${token}`);
+      throw new Error("Invalid haha");
     }
     return user;
   }
