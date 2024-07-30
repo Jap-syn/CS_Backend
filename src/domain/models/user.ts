@@ -1,8 +1,17 @@
+import { ObjectId } from "mongodb";
+
 export default class User {
   constructor(
-    public id: string,
-    public name: string,
+    public id: ObjectId,
+    public first_name: string,
+    public last_name: string,
     public email: string,
-    public password: string
+    public password: string,
+    public phone: string,
+    public dob: Date,
+    public gender: string,
+    public status: number,
+    public remark: string,
+    public token: string
   ) {}
 }

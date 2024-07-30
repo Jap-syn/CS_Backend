@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import { connectDatabase } from '../infrastructure/database/database';
 import logger from '../infrastructure/config/logger';
 import userRoutes from './http/routes/userRoutes';
+import authRoutes from './http/routes/authRoutes';
 import {config} from '../infrastructure/config/index';
 import { errorResponse } from '../application/helpers/utils/response';
 
@@ -20,6 +21,7 @@ app.use(bodyParser.json());
 
 // Routes
 app.use('/users', userRoutes);
+app.use('/', authRoutes);
 
 // Error handling middleware
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
