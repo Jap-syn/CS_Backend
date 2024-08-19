@@ -16,8 +16,17 @@ connectDatabase().then(() => {
 });
 
 // Middleware
-app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+const rolesRouter = express.Router();
+
+rolesRouter.post('/roles', (req, res) => {
+    console.log('POST /roles');
+    console.log('Request body:', req.body);
+    // Implement role creation logic here
+    res.status(201).json({ message: 'Role created successfully', data: req.body });
+});
 
 // Routes
 app.use('/users', userRoutes);
