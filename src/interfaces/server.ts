@@ -4,6 +4,9 @@ import { connectDatabase } from '../infrastructure/database/database';
 import logger from '../infrastructure/config/logger';
 import userRoutes from './http/routes/userRoutes';
 import roleRoutes from './http/routes/roleRoutes';
+import divisionRoutes from './http/routes/divisionRoutes';
+import cityRoutes from './http/routes/cityRoutes';
+import businessTypeRoutes from './http/routes/businessTypeRoutes';
 import {config} from '../infrastructure/config/index';
 import { errorResponse } from '../application/helpers/utils/response';
 
@@ -31,6 +34,9 @@ rolesRouter.post('/roles', (req, res) => {
 // Routes
 app.use('/users', userRoutes);
 app.use('/roles', roleRoutes);
+app.use('/divisions', divisionRoutes);
+app.use('/cities', cityRoutes);
+app.use('/business-types', businessTypeRoutes);
 
 
 // Error handling middleware
