@@ -8,6 +8,12 @@ export default class MongooseUserRepository implements UserRepository {
     return users.map(user => new User(user.id, user.name, user.email, user.password));
   }
 
+  async findByEmail(email: string): Promise<User | null> {
+    const user = await UserSchema.findOne({ email });
+    if (!user) return null;
+    return new User(user.id, user.name, user.email, user.password);
+  }
+
   async findById(id: string): Promise<User | null> {
     const user = await UserSchema.findById(id);
     if (!user) return null;
